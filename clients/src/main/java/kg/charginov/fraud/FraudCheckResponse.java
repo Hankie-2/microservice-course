@@ -1,4 +1,4 @@
-package kg.charginov.model.response;
+package kg.charginov.fraud;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 }

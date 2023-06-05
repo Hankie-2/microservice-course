@@ -1,6 +1,6 @@
 package kg.charginov.controller;
 
-import kg.charginov.model.response.FraudCheckResponse;
+import kg.charginov.fraud.FraudCheckResponse;
 import kg.charginov.service.FraudCheckHistoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class FraudController {
     private final FraudCheckHistoryService fraudCheckHistoryService;
 
     @GetMapping(path = "{customerId}")
-    public ResponseEntity<?> isFraudster(
+    public ResponseEntity<FraudCheckResponse> isFraudster(
             @PathVariable("customerId") Long customerId){
         boolean isFraudulentCustomer = fraudCheckHistoryService
                 .isFraudulentCustomer(customerId);
