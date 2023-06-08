@@ -4,6 +4,8 @@ import kg.charginov.fraud.FraudCheckResponse;
 import kg.charginov.fraud.FraudClient;
 import kg.charginov.model.entity.Customer;
 import kg.charginov.model.request.CustomerRegistrationRequest;
+import kg.charginov.notification.NotificationClient;
+import kg.charginov.notification.NotificationRequest;
 import kg.charginov.repository.CustomerRepository;
 import kg.charginov.service.CustomerService;
 import lombok.AllArgsConstructor;
@@ -15,8 +17,8 @@ import org.springframework.web.client.RestTemplate;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final RestTemplate restTemplate;
     private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
 
     @Override
     public Customer registerCustomer(CustomerRegistrationRequest request) {
@@ -33,6 +35,14 @@ public class CustomerServiceImpl implements CustomerService {
         if(fraudCheckResponse.isFraudster()){
             throw new IllegalStateException("Fraudster");
         }
+
+        notificationClient.sendNotification(
+                NotificationRequest.builder()
+                        .toCustomerId(customer.getId())
+                        .message("Hello" + customer.getFirstName())
+                        .toCustomerEmail(customer.getEmail())
+                        .sender("Marsel")
+                        .build());
 
         return customer;
     }
