@@ -1,5 +1,6 @@
 package kg.charginov.service.impl;
 
+import kg.charginov.RabbitMQMessageProducer;
 import kg.charginov.fraud.FraudCheckResponse;
 import kg.charginov.fraud.FraudClient;
 import kg.charginov.model.entity.Customer;
@@ -12,13 +13,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+
 @Service
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
-    private final NotificationClient notificationClient;
+    private final RabbitMQMessageProducer messageProducer;
 
     @Override
     public Customer registerCustomer(CustomerRegistrationRequest request) {
@@ -36,13 +39,19 @@ public class CustomerServiceImpl implements CustomerService {
             throw new IllegalStateException("Fraudster");
         }
 
-        notificationClient.sendNotification(
-                NotificationRequest.builder()
-                        .toCustomerId(customer.getId())
-                        .message("Hello" + customer.getFirstName())
-                        .toCustomerEmail(customer.getEmail())
-                        .sender("Marsel")
-                        .build());
+        NotificationRequest notificationRequest = NotificationRequest.builder()
+                .toCustomerId(customer.getId())
+                .message("Hello" + customer.getFirstName())
+                .toCustomerEmail(customer.getEmail())
+                .sentAt(LocalDateTime.now())
+                .sender("Marsel")
+                .build();
+
+        messageProducer.publish(
+                notificationRequest,
+                "internal.exchange",
+                "internal.notification.routing-key"
+        );
 
         return customer;
     }

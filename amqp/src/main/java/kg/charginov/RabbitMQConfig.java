@@ -16,19 +16,19 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @AllArgsConstructor
-public class RabbitMQConfig
-{
+public class RabbitMQConfig {
+
     private final ConnectionFactory connectionFactory;
 
     @Bean
-    public AmqpTemplate amqpTemplate(){
+    public AmqpTemplate amqpTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(jacksonConverter());
         return rabbitTemplate;
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(){
+    public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory() {
         SimpleRabbitListenerContainerFactory factory =
                 new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
@@ -37,9 +37,10 @@ public class RabbitMQConfig
     }
 
     @Bean
-    public MessageConverter jacksonConverter(){
-        MessageConverter jackson2MessageConverter = new Jackson2JsonMessageConverter();
-        return jackson2MessageConverter;
+    public MessageConverter jacksonConverter() {
+        MessageConverter jackson2JsonMessageConverter =
+                new Jackson2JsonMessageConverter();
+        return jackson2JsonMessageConverter;
     }
 
 }

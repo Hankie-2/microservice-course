@@ -8,7 +8,11 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 /**
  * Hello world!
  */
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {
+                "kg.charginov"
+        }
+)
 @EnableEurekaClient
 @EnableFeignClients(
         basePackages = "kg.charginov"
